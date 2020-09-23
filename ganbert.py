@@ -28,6 +28,11 @@ flags = tf.flags
 
 FLAGS = flags.FLAGS
 
+## for export funcs
+flags.DEFINE_bool("do_export", False, "Whether to export the model.")
+flags.DEFINE_string("export_dir", None,
+                    "The dir where the exported model will be written.")
+
 flags.DEFINE_integer(
     "unlabeled_multiplier", 100,
     "The multiplier to compute the max number of unlabeled examples with respect to the labeled examples."
@@ -865,25 +870,25 @@ def main(_):
         num_written_lines += 1
     assert num_written_lines == num_actual_predict_examples
 
-    def serving_input_fn():
-      feature_spec = {
-          "input_ids": tf.FixedLenFeature([FLAGS.max_seq_length], tf.int64),
-          "input_mask": tf.FixedLenFeature([FLAGS.max_seq_length], tf.int64),
-          "segment_ids": tf.FixedLenFeature([FLAGS.max_seq_length], tf.int64),
-          "label_ids": tf.FixedLenFeature([], tf.int64)
-      }
-      serialized_tf_example = tf.placeholder(dtype=tf.string,
-                                             shape=[None],
-                                             name='input_example_tensor')
-      receiver_tensors = {'example': serialized_tf_example}
-      features = tf.parse_example(serialized_tf_example, feature_spec)
-      return tf.estimator.export.ServingInputReceiver(features,
-                                                      receiver_tensors)
+  def serving_input_fn():
+    label_ids = tf.placeholder(tf.int32, [None], name='label_ids')
+    input_ids = tf.placeholder(tf.int32, [None, FLAGS.max_seq_length],
+                               name='input_ids')
+    input_mask = tf.placeholder(tf.int32, [None, FLAGS.max_seq_length],
+                                name='input_mask')
+    segment_ids = tf.placeholder(tf.int32, [None, FLAGS.max_seq_length],
+                                 name='segment_ids')
+    input_fn = tf.estimator.export.build_raw_serving_input_receiver_fn({
+        'label_ids': label_ids,
+        'input_ids': input_ids,
+        'input_mask': input_mask,
+        'segment_ids': segment_ids,
+    })()
+    return input_fn
 
-    estimator._export_to_tpu = False  # this is important
-    path = estimator.export_savedmodel("./export_dir",
-                                       serving_input_fn,
-                                       strip_default_attrs=True)
+  if FLAGS.do_export:
+    estimator._export_to_tpu = False
+    path = estimator.export_savedmodel(FLAGS.export_dir, serving_input_fn)
     print("export savedmodel to: ", path)
 
 
