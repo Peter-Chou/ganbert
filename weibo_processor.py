@@ -103,7 +103,7 @@ class WeiBoProcessor(DataProcessor):
 
   def get_labels(self):
     """See base class."""
-    return ["trash", "news", "unlabeled"]
+    return ["unlabeled", "trash", "news"]
 
   def _create_examples(self, input_file, set_type):
     """Creates examples for the training and dev sets."""
