@@ -871,18 +871,20 @@ def main(_):
     assert num_written_lines == num_actual_predict_examples
 
   def serving_input_fn():
-    label_ids = tf.placeholder(tf.int32, [None], name='label_ids')
-    input_ids = tf.placeholder(tf.int32, [None, FLAGS.max_seq_length],
+    label_ids = tf.placeholder(tf.int64, [None], name='label_ids')
+    input_ids = tf.placeholder(tf.int64, [None, FLAGS.max_seq_length],
                                name='input_ids')
-    input_mask = tf.placeholder(tf.int32, [None, FLAGS.max_seq_length],
+    input_mask = tf.placeholder(tf.int64, [None, FLAGS.max_seq_length],
                                 name='input_mask')
-    segment_ids = tf.placeholder(tf.int32, [None, FLAGS.max_seq_length],
+    segment_ids = tf.placeholder(tf.int64, [None, FLAGS.max_seq_length],
                                  name='segment_ids')
+    label_mask = tf.placeholder(tf.int64, [None], name="label_mask")
     input_fn = tf.estimator.export.build_raw_serving_input_receiver_fn({
         'label_ids': label_ids,
         'input_ids': input_ids,
         'input_mask': input_mask,
         'segment_ids': segment_ids,
+        'label_mask': label_mask
     })()
     return input_fn
 
