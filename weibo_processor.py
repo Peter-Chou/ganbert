@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import os
 import csv
+import os
+
 import tensorflow as tf
+
 import tokenization
 
 
@@ -76,16 +78,6 @@ class DataProcessor(object):
   def get_labels(self):
     """Gets the list of labels for this data set."""
     raise NotImplementedError()
-
-  @classmethod
-  def _read_tsv(cls, input_file, quotechar=None):
-    """Reads a tab separated value file."""
-    with tf.gfile.Open(input_file, "r") as f:
-      reader = csv.reader(f, delimiter="\t", quotechar=quotechar)
-      lines = []
-      for line in reader:
-        lines.append(line)
-      return lines
 
 
 class WeiBoProcessor(DataProcessor):
