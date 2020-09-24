@@ -5,14 +5,14 @@ from weibo_processor import WeiBoProcessor
 import requests
 import tokenization
 import numpy as np
+import logging
 
-MAX_SEQ_LEN = 128
+from typing import List
 
-EXAMPLE = "#民族团结党旗红#【生态净土 大美祁连 生态环境保护工作优先发展】"  # trash
-EXAMPLE_2 = "【#字节跳动针对三方合作中的不实传言做出回应# 】21日上午，字节跳动针对与甲骨文及沃尔玛的三方合作中存在的不实传言进行回应，声明TikTok Global是字节跳动持股100%的子公司，并称目前的合作方案中不涉及任何算法和技术的转让。至于50亿美金教育基金的设立，公司也是从新闻中第一次听说。"  # trash
+logger = logging.getLogger(__name__)
 
 
-class WeiBoRequestAdapter:
+class WeiBoModelRequestAdapter:
   endpoints = "http://localhost:8501/v1/models/ganbert:predict"
   headers = {"content-type": "application-json"}
 
@@ -28,7 +28,7 @@ class WeiBoRequestAdapter:
     self.news_index = news_index
     self.too_short_threshold = too_short_threshold
 
-  def request_model_results(self, texts):
+  def request_model_results(self, texts: List) -> List[bool]:
     instances = []
     for text in texts:
       instances.append(self._preprocess_text(text))
@@ -38,15 +38,16 @@ class WeiBoRequestAdapter:
         "instances": instances
     })
 
-    response = requests.post(WeiBoRequestAdapter.endpoints,
+    response = requests.post(WeiBoModelRequestAdapter.endpoints,
                              data=data,
-                             headers=WeiBoRequestAdapter.headers)
+                             headers=WeiBoModelRequestAdapter.headers)
     prediction = json.loads(response.text)['predictions']
     prediction = np.asfarray(prediction)
     print(type(prediction))
     print(prediction)
     results = np.argmax(prediction, axis=1)
-    print("results index: ", results == self.news_index)
+    logger.debug("model results index: ", results == self.news_index)
+    return (results == self.news_index).tolist()
 
   def _is_too_short(self, text):
     if len(text) < self.too_short_threshold:
@@ -88,14 +89,3 @@ class WeiBoRequestAdapter:
         "label_ids": label_id,
         "label_mask": [1]
     }
-
-
-def main():
-  weibo_client = WeiBoRequestAdapter(dict_path="./vocab.txt",
-                                     max_seq_length=MAX_SEQ_LEN,
-                                     do_lower_case=True)
-  weibo_client.request_model_results([EXAMPLE, EXAMPLE_2])
-
-
-if __name__ == '__main__':
-  main()
