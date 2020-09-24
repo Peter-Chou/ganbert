@@ -5,11 +5,8 @@ from weibo_processor import WeiBoProcessor
 import requests
 import tokenization
 import numpy as np
-import logging
 
 from typing import List
-
-logger = logging.getLogger(__name__)
 
 
 class WeiBoModelRequestAdapter:
@@ -43,10 +40,7 @@ class WeiBoModelRequestAdapter:
                              headers=WeiBoModelRequestAdapter.headers)
     prediction = json.loads(response.text)['predictions']
     prediction = np.asfarray(prediction)
-    print(type(prediction))
-    print(prediction)
     results = np.argmax(prediction, axis=1)
-    logger.debug("model results index: ", results == self.news_index)
     return (results == self.news_index).tolist()
 
   def _is_too_short(self, text):

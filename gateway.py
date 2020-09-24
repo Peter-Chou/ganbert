@@ -1,7 +1,6 @@
 import os
 from flask import Flask, jsonify, request
 from weibo_client import WeiBoModelRequestAdapter
-import logging
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
@@ -10,7 +9,6 @@ app = Flask(__name__)
 TOO_SHORT_THRESHOLD = 30
 
 MAX_SEQ_LEN = 128
-logger = logging.getLogger(__name__)
 
 weibo_client = WeiBoModelRequestAdapter(dict_path="./vocab.txt",
                                         max_seq_length=MAX_SEQ_LEN,
@@ -44,7 +42,6 @@ def classify_trash_news():
     response["code"] = 1
     response["msg"] = "success"
     response["is_news"] = is_news_results
-    logger.debug("is news result: ", is_news_results)
   except Exception as e:
     response["code"] = "0"
     response["msg"] = "fail"
@@ -68,6 +65,5 @@ def _is_too_short(text):
 
 
 if __name__ == "__main__":
-  logger.setLevel(logging.DEBUG)
   app.run(host="0.0.0.0", port=9004, debug=True, threaded=False)
   # app.run(host="0.0.0.0", port=9004, debug=False, threaded=True)
