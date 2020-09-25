@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: docker/gateway.dockerfile
       args:
-        - BASE_VERSION=base:v0.0.0
+        - BASE_VERSION=weibo-base:0.0.0
     image: weibo-filter-gateway:0.0.0
     ports:
       - ${PORT}:9004
@@ -19,19 +19,21 @@ services:
       replicas: 1
       resources:
         limits:
-          cpus: 0.2
+          cpus: ${GATEWAY_CPUS}
     networks:
       - tf_serving
   base:
     build:
       context: ./docker
       dockerfile: base.dockerfile
-    image: base:v0.0.0
+    image: weibo-base:0.0.0
     networks:
       - tf_serving
     deploy:
       replicas: 0
   tfs:
+    env_file:
+      - compose.env
     image: tensorflow/serving:1.14.0
     restart: unless-stopped
     volumes:
@@ -44,10 +46,10 @@ services:
       - tf_serving
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: ${TFS_REPLICAS}
       resources:
         limits:
-          cpus: 0.2
+          cpus: ${TFS_CPUS}
 
 networks:
   tf_serving:
