@@ -10,7 +10,8 @@ from typing import List
 
 
 class WeiBoModelRequestAdapter:
-  endpoints = "http://localhost:8501/v1/models/ganbert:predict"
+  # endpoints = "http://localhost:8501/v1/models/ganbert:predict" # in host
+  endpoints = "http://tfs:8501/v1/models/ganbert:predict"  # In docker
   headers = {"content-type": "application-json"}
 
   def __init__(self,

@@ -1,0 +1,54 @@
+version: "3.8"
+services:
+  gateway:
+    env_file:
+      - compose.env
+    build:
+      context: .
+      dockerfile: docker/gateway.dockerfile
+      args:
+        - BASE_VERSION=base:v0.0.0
+    image: weibo-filter-gateway:0.0.0
+    ports:
+      - ${PORT}:9004
+    depends_on:
+      - base
+      - tfs
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: 0.2
+    networks:
+      - tf_serving
+  base:
+    build:
+      context: ./docker
+      dockerfile: base.dockerfile
+    image: base:v0.0.0
+    networks:
+      - tf_serving
+    deploy:
+      replicas: 0
+  tfs:
+    image: tensorflow/serving:1.14.0
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ./saved_model
+        target: /saved_model
+        read_only: true
+    command: --port=8500 --rest_api_port=8501 --model_name=ganbert --model_base_path=/saved_model
+    networks:
+      - tf_serving
+    deploy:
+      mode: replicated
+      replicas: 3
+      resources:
+        limits:
+          cpus: 0.2
+
+networks:
+  tf_serving:
+    driver: bridge
