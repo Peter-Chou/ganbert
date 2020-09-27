@@ -1,6 +1,24 @@
+.git/
+
+build
+dist
+*.egg-info
+*.egg/
+*.pyc
+*.swp
+
+.tox
+.coverage
+html/*
+__pycache__
+
+# Compiled Documentation
+docs/_build
+
+# custom
 **/data
+trained_ckpt/
 **/python
 **/chinese_L-12_H-768_A-12
 **/docker
 **/saved_model
-**/__pycache__
