@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 import os
-from weibo_processor import WeiBoProcessor
 import requests
 import tokenization
 import numpy as np

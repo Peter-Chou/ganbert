@@ -888,9 +888,29 @@ def main(_):
     })()
     return input_fn
 
+  def serving_input_rpc_fn():
+    pass
+    feature_spec = {
+        "input_ids": tf.FixedLenFeature([FLAGS.max_seq_length], tf.int64),
+        "input_mask": tf.FixedLenFeature([FLAGS.max_seq_length], tf.int64),
+        "segment_ids": tf.FixedLenFeature([FLAGS.max_seq_length], tf.int64),
+        "label_ids": tf.FixedLenFeature([], tf.int64),
+        "label_mask": tf.FixedLenFeature([], tf.int64)
+    }
+    serialized_tf_example = tf.placeholder(dtype=tf.string,
+                                           shape=[None],
+                                           name='input_example_tensor')
+    receiver_tensors = {'examples': serialized_tf_example}
+    features = tf.parse_example(serialized_tf_example, feature_spec)
+    return tf.estimator.export.ServingInputReceiver(features, receiver_tensors)
+
   if FLAGS.do_export:
     estimator._export_to_tpu = False
-    path = estimator.export_savedmodel(FLAGS.export_dir, serving_input_fn)
+    # path = estimator.export_savedmodel(FLAGS.export_dir, serving_input_fn)
+    path = estimator.export_saved_model(
+        export_dir_base=FLAGS.export_dir,
+        serving_input_receiver_fn=serving_input_rpc_fn)
+
     print("export savedmodel to: ", path)
 
 
