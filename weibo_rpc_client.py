@@ -55,7 +55,7 @@ class WeiBoModelRequestRpcAdapter:
     # tensor_proto.string_val.extend(serialized_examples)
 
     request.inputs["examples"].CopyFrom(tensor_proto)
-    request_result = self._stub.Predict(request, 20)  # 200 is timeout
+    request_result = self._stub.Predict(request, 600)  # 600 is timeout
     classifier_result = request_result.outputs["probabilities"].float_val
     classifier_result_np = np.reshape(np.asfarray(classifier_result), (-1, 3))
 
