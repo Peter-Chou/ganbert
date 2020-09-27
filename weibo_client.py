@@ -43,10 +43,6 @@ class WeiBoModelRequestAdapter:
     results = np.argmax(prediction, axis=1)
     return (results == self.news_index).tolist()
 
-  def _is_too_short(self, text):
-    if len(text) < self.too_short_threshold:
-      return True
-
   def _preprocess_text(self, text):
     text = tokenization.convert_to_unicode(text)
     tokens_a = self.tokenizer.tokenize(text)

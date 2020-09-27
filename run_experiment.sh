@@ -21,7 +21,7 @@ python -u ganbert.py \
        --do_eval=true \
        --do_predict=false \
        --do_export=true \
-       --export_dir=saved_rpc_model \
+       --export_dir=saved_model \
        --data_dir=${cur_dir} \
        --vocab_file=$BERT_BASE_DIR/vocab.txt \
        --bert_config_file=$BERT_BASE_DIR/bert_config.json \

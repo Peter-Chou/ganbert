@@ -1,6 +1,6 @@
 import os
 from flask import Flask, jsonify, request
-from weibo_client import WeiBoModelRequestAdapter
+from weibo_rpc_client import WeiBoModelRequestRpcAdapter
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
@@ -10,9 +10,9 @@ TOO_SHORT_THRESHOLD = 30
 
 MAX_SEQ_LEN = 128
 
-weibo_client = WeiBoModelRequestAdapter(dict_path="./vocab.txt",
-                                        max_seq_length=MAX_SEQ_LEN,
-                                        do_lower_case=True)
+weibo_client = WeiBoModelRequestRpcAdapter(dict_path="./vocab.txt",
+                                           max_seq_length=MAX_SEQ_LEN,
+                                           do_lower_case=True)
 
 
 @app.route("/v1/weibo/newsClassify", methods=["POST"])
@@ -65,5 +65,5 @@ def _is_too_short(text):
 
 
 if __name__ == "__main__":
-  app.run(host="0.0.0.0", port=20004, debug=True, threaded=False)
+  app.run(host="0.0.0.0", port=9004, debug=True, threaded=False)
   # app.run(host="0.0.0.0", port=9004, debug=False, threaded=True)

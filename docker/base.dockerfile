@@ -41,5 +41,6 @@ RUN mkdir -p ~/.pip && echo '[global]\n\
 RUN pip install numpy==1.19.2 \
 	Flask==1.1.2 \
 	tensorflow==1.14.0 \
+	tensorflow-serving-api==1.14.0 \
 	requests==2.24.0 \
 	gunicorn==20.0.4
