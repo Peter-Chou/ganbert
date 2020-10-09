@@ -36,7 +36,7 @@ RUN  apt-get update && apt-get install -y \
 	&& \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.2-Linux-x86_64.sh -O ~/miniconda.sh && \
+RUN wget --quiet https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py37_4.8.2-Linux-x86_64.sh -O ~/miniconda.sh && \
 	/bin/bash ~/miniconda.sh -b -p /opt/conda && \
 	rm ~/miniconda.sh && \
 	ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
