@@ -15,8 +15,8 @@ import numpy as np
 
 
 class WeiBoModelRequestRpcAdapter:
-  # rpc_server = "localhost:8500"
-  rpc_server = "tfs:8500"
+  rpc_server = "localhost:8500"
+  # rpc_server = "tfs:8500"
   model_name = "ganbert"
   model_signature_name = "serving_default"
 
